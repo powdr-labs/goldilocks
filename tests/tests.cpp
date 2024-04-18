@@ -1,12 +1,11 @@
 #include <gtest/gtest.h>
-#include <iostream>
+#include <string>
 
 #include "../src/goldilocks_base_field.hpp"
 #include "../src/goldilocks_cubic_extension.hpp"
 #include "../src/poseidon_goldilocks.hpp"
 #include "../src/ntt_goldilocks.hpp"
 #include "../src/merklehash_goldilocks.hpp"
-#include <immintrin.h>
 
 #define FFT_SIZE (1 << 4)
 #define NUM_REPS 5

@@ -1,6 +1,6 @@
 #ifndef GOLDILOCKS_SCALAR
 #define GOLDILOCKS_SCALAR
-#include "goldilocks_base_field.hpp"
+#include "goldilocks_base_field_base.hpp"
 
 inline void Goldilocks::copy(Element &dst, const Element &src) { dst.fe = src.fe; };
 

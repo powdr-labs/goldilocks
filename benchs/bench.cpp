@@ -1,12 +1,8 @@
 #include <benchmark/benchmark.h>
-#include <iostream>
 
 #include "../src/goldilocks_base_field.hpp"
-#include "../src/poseidon_goldilocks.hpp"
-#include "../src/poseidon_goldilocks_avx.hpp"
 #include "../src/ntt_goldilocks.hpp"
 #include "../src/merklehash_goldilocks.hpp"
-#include <immintrin.h>
 
 #include <math.h> /* ceil */
 #include "omp.h"

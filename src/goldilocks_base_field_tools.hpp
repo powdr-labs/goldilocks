@@ -1,7 +1,11 @@
 #ifndef GOLDILOCKS_BASIC
 #define GOLDILOCKS_BASIC
-#include "goldilocks_base_field.hpp"
 
+#include <iostream>
+
+#include "goldilocks_base_field_base.hpp"
+
+#ifdef __x86_64__
 inline uint64_t Goldilocks::to_montgomery(const uint64_t &in1)
 {
     uint64_t res;
@@ -22,6 +26,7 @@ inline uint64_t Goldilocks::to_montgomery(const uint64_t &in1)
         : "%rax", "%r8", "%r9", "%r10");
     return res;
 }
+
 inline uint64_t Goldilocks::from_montgomery(const uint64_t &in1)
 {
     uint64_t res;
@@ -40,6 +45,7 @@ inline uint64_t Goldilocks::from_montgomery(const uint64_t &in1)
         : "%rax", "%r8", "%r9", "%r10");
     return res;
 }
+#endif
 
 inline const Goldilocks::Element &Goldilocks::zero() { return ZERO; };
 inline void Goldilocks::zero(Element &result) { result.fe = ZERO.fe; };

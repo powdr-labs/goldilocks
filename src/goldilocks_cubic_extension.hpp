@@ -2,10 +2,14 @@
 #define GOLDILOCKS_F3
 
 #include <stdint.h> // for uint64_t
-#include "goldilocks_base_field.hpp"
-#include <immintrin.h>
 #include <cassert>
 #include <vector>
+
+#include "goldilocks_base_field_avx.hpp"
+#include "goldilocks_base_field_base.hpp"
+
+#include "simde/x86/avx2.h"
+#include "simde/x86/avx512/types.h"
 
 #define FIELD_EXTENSION 3
 
@@ -19,8 +23,8 @@ class Goldilocks3
 {
 public:
     typedef Goldilocks::Element Element[FIELD_EXTENSION];
-    typedef __m256i Element_avx[FIELD_EXTENSION];
-    typedef __m512i Element_avx512[FIELD_EXTENSION];
+    typedef simde__m256i Element_avx[FIELD_EXTENSION];
+    typedef simde__m512i Element_avx512[FIELD_EXTENSION];
 
 private:
     static const Element ZERO;
@@ -71,9 +75,9 @@ public:
         a0[3] = a[ind];
         a1[3] = a[ind + 1];
         a2[3] = a[ind + 2];
-        a_[0] = _mm256_loadu_si256((__m256i *)(a0));
-        a_[1] = _mm256_loadu_si256((__m256i *)(a1));
-        a_[2] = _mm256_loadu_si256((__m256i *)(a2));
+        a_[0] = simde_mm256_loadu_si256(( simde__m256i *)(a0));
+        a_[1] = simde_mm256_loadu_si256(( simde__m256i *)(a1));
+        a_[2] = simde_mm256_loadu_si256(( simde__m256i *)(a2));
     };
     static inline void load_avx(Element_avx &a_, const Goldilocks::Element *a, const uint64_t offsets_a[4])
     {
@@ -91,17 +95,17 @@ public:
         a0[3] = a[offsets_a[3]];
         a1[3] = a[offsets_a[3] + 1];
         a2[3] = a[offsets_a[3] + 2];
-        a_[0] = _mm256_loadu_si256((__m256i *)(a0));
-        a_[1] = _mm256_loadu_si256((__m256i *)(a1));
-        a_[2] = _mm256_loadu_si256((__m256i *)(a2));
+        a_[0] = simde_mm256_loadu_si256(( simde__m256i *)(a0));
+        a_[1] = simde_mm256_loadu_si256(( simde__m256i *)(a1));
+        a_[2] = simde_mm256_loadu_si256(( simde__m256i *)(a2));
     };
 
     static inline void store_avx(Goldilocks::Element *a, uint64_t stride_a, const Element_avx a_)
     {
         Goldilocks::Element a0[4], a1[4], a2[4];
-        _mm256_storeu_si256((__m256i *)a0, a_[0]);
-        _mm256_storeu_si256((__m256i *)a1, a_[1]);
-        _mm256_storeu_si256((__m256i *)a2, a_[2]);
+        simde_mm256_storeu_si256(( simde__m256i *)a0, a_[0]);
+        simde_mm256_storeu_si256(( simde__m256i *)a1, a_[1]);
+        simde_mm256_storeu_si256(( simde__m256i *)a2, a_[2]);
         a[0] = a0[0];
         a[1] = a1[0];
         a[2] = a2[0];
@@ -120,9 +124,9 @@ public:
     static inline void store_avx(Goldilocks::Element *a, const uint64_t offsets_a[4], const Element_avx &a_)
     {
         Goldilocks::Element a0[4], a1[4], a2[4];
-        _mm256_storeu_si256((__m256i *)a0, a_[0]);
-        _mm256_storeu_si256((__m256i *)a1, a_[1]);
-        _mm256_storeu_si256((__m256i *)a2, a_[2]);
+        simde_mm256_storeu_si256(( simde__m256i *)a0, a_[0]);
+        simde_mm256_storeu_si256(( simde__m256i *)a1, a_[1]);
+        simde_mm256_storeu_si256(( simde__m256i *)a2, a_[2]);
         a[offsets_a[0]] = a0[0];
         a[offsets_a[0] + 1] = a1[0];
         a[offsets_a[0] + 2] = a2[0];
@@ -137,12 +141,12 @@ public:
         a[offsets_a[3] + 2] = a2[3];
     };
 
-    static inline void store_avx(Goldilocks::Element *a, const uint64_t offset_a, const __m256i *a_, uint64_t stride_a)
+    static inline void store_avx(Goldilocks::Element *a, const uint64_t offset_a, const  simde__m256i *a_, uint64_t stride_a)
     {
         Goldilocks::Element a0[4], a1[4], a2[4];
-        _mm256_storeu_si256((__m256i *)a0, a_[0]);
-        _mm256_storeu_si256((__m256i *)a1, a_[stride_a]);
-        _mm256_storeu_si256((__m256i *)a2, a_[2*stride_a]);
+        simde_mm256_storeu_si256(( simde__m256i *)a0, a_[0]);
+        simde_mm256_storeu_si256(( simde__m256i *)a1, a_[stride_a]);
+        simde_mm256_storeu_si256(( simde__m256i *)a2, a_[2*stride_a]);
         a[0] = a0[0];
         a[1] = a1[0];
         a[2] = a2[0];
@@ -159,12 +163,12 @@ public:
         a[ind + 2] = a2[3];
     };
 
-    static inline void store_avx(Goldilocks::Element *a, const uint64_t offsets_a[4], const __m256i *a_, uint64_t stride_a)
+    static inline void store_avx(Goldilocks::Element *a, const uint64_t offsets_a[4], const  simde__m256i *a_, uint64_t stride_a)
     {
         Goldilocks::Element a0[4], a1[4], a2[4];
-        _mm256_storeu_si256((__m256i *)a0, a_[0]);
-        _mm256_storeu_si256((__m256i *)a1, a_[stride_a]);
-        _mm256_storeu_si256((__m256i *)a2, a_[2 * stride_a]);
+        simde_mm256_storeu_si256(( simde__m256i *)a0, a_[0]);
+        simde_mm256_storeu_si256(( simde__m256i *)a1, a_[stride_a]);
+        simde_mm256_storeu_si256(( simde__m256i *)a2, a_[2 * stride_a]);
         a[offsets_a[0]] = a0[0];
         a[offsets_a[0] + 1] = a1[0];
         a[offsets_a[0] + 2] = a2[0];
@@ -181,8 +185,8 @@ public:
 
     static inline void mul_avx(Element_avx &c_, const Element_avx &a_, const Element_avx &challenge_, const Element_avx &challenge_ops_)
     {
-        __m256i A_, B_, C_, D_, E_, F_, G_;
-        __m256i auxr_;
+         simde__m256i A_, B_, C_, D_, E_, F_, G_;
+         simde__m256i auxr_;
 
         Goldilocks::add_avx(A_, a_[0], a_[1]);
         Goldilocks::add_avx(B_, a_[0], a_[2]);
@@ -204,10 +208,10 @@ public:
         Goldilocks::sub_avx(c_[2], B_, G_);
     };
 
-    static inline void mul_avx(__m256i *c_, uint64_t stride_c, const __m256i *a_, uint64_t stride_a, const Element_avx &challenge_, const Element_avx &challenge_ops_)
+    static inline void mul_avx( simde__m256i *c_, uint64_t stride_c, const  simde__m256i *a_, uint64_t stride_a, const Element_avx &challenge_, const Element_avx &challenge_ops_)
     {
-        __m256i A_, B_, C_, D_, E_, F_, G_;
-        __m256i auxr_;
+         simde__m256i A_, B_, C_, D_, E_, F_, G_;
+         simde__m256i auxr_;
 
         Goldilocks::add_avx(A_, a_[0], a_[stride_a]);
         Goldilocks::add_avx(B_, a_[0], a_[2 * stride_a]);
@@ -473,9 +477,9 @@ public:
     static inline void mul_avx(Element_avx &c_, const Element_avx &a_, const Element_avx &b_)
     {
 
-        __m256i aux0_, aux1_, aux2_;
-        __m256i A_, B_, C_, D_, E_, F_, G_;
-        __m256i auxr_;
+         simde__m256i aux0_, aux1_, aux2_;
+         simde__m256i A_, B_, C_, D_, E_, F_, G_;
+         simde__m256i auxr_;
 
         Goldilocks::add_avx(A_, a_[0], a_[1]);
         Goldilocks::add_avx(B_, a_[0], a_[2]);
@@ -615,7 +619,7 @@ public:
 
     // ======== OPERATIONS ========
 
-    static inline void op_avx(uint64_t op, __m256i *c_, uint64_t stride_c, const __m256i *a_, uint64_t stride_a, const __m256i *b_, uint64_t stride_b)
+    static inline void op_avx(uint64_t op,  simde__m256i *c_, uint64_t stride_c, const  simde__m256i *a_, uint64_t stride_a, const  simde__m256i *b_, uint64_t stride_b)
     {
         switch (op)
         {
@@ -630,9 +634,9 @@ public:
             Goldilocks::sub_avx(c_[2 * stride_c], a_[2 * stride_a], b_[2 * stride_b]);
             break;
         case 2:
-            __m256i aux0_, aux1_, aux2_;
-            __m256i A_, B_, C_, D_, E_, F_, G_;
-            __m256i auxr_;
+             simde__m256i aux0_, aux1_, aux2_;
+             simde__m256i A_, B_, C_, D_, E_, F_, G_;
+             simde__m256i auxr_;
 
             Goldilocks::add_avx(A_, a_[0], a_[stride_a]);
             Goldilocks::add_avx(B_, a_[0], a_[2 * stride_a]);
@@ -689,7 +693,7 @@ public:
         }
     }
 
-    static inline void op_31_avx(uint64_t op, Element_avx &c_, const Element_avx &a_, const __m256i &b_)
+    static inline void op_31_avx(uint64_t op, Element_avx &c_, const Element_avx &a_, const  simde__m256i &b_)
     {
         switch (op)
         {
@@ -719,7 +723,7 @@ public:
         }
     }
 
-    static inline void op_31_avx(uint64_t op, __m256i *c_, uint64_t stride_c, const __m256i *a_, uint64_t stride_a, const __m256i &b_)
+    static inline void op_31_avx(uint64_t op,  simde__m256i *c_, uint64_t stride_c, const  simde__m256i *a_, uint64_t stride_a, const  simde__m256i &b_)
     {
         switch (op)
         {

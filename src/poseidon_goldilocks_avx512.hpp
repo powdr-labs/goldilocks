@@ -1,7 +1,7 @@
 #ifndef POSEIDON_GOLDILOCKS_AVX512
 #define POSEIDON_GOLDILOCKS_AVX512
 #ifdef __AVX512__
-#include "poseidon_goldilocks.hpp"
+#include "poseidon_goldilocks_base.hpp"
 #include "goldilocks_base_field.hpp"
 #include <immintrin.h>
 

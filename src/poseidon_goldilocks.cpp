@@ -1,6 +1,6 @@
 #include "poseidon_goldilocks.hpp"
+
 #include <math.h> /* floor */
-#include "merklehash_goldilocks.hpp"
 
 void PoseidonGoldilocks::hash_full_result_seq(Goldilocks::Element *state, const Goldilocks::Element *input)
 {
@@ -167,7 +167,7 @@ void PoseidonGoldilocks::hash_full_result(Goldilocks::Element *state, const Gold
 {
     const int length = SPONGE_WIDTH * sizeof(Goldilocks::Element);
     std::memcpy(state, input, length);
-    __m256i st0, st1, st2;
+    simde__m256i st0, st1, st2;
     Goldilocks::load_avx(st0, &(state[0]));
     Goldilocks::load_avx(st1, &(state[4]));
     Goldilocks::load_avx(st2, &(state[8]));
@@ -187,17 +187,17 @@ void PoseidonGoldilocks::hash_full_result(Goldilocks::Element *state, const Gold
     Goldilocks::Element state0_ = state[0];
     Goldilocks::Element state0;
 
-    __m256i mask = _mm256_set_epi64x(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0);
+    simde__m256i mask = simde_mm256_set_epi64x(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0);
     for (int r = 0; r < N_PARTIAL_ROUNDS; r++)
     {
         state0 = state0_;
         pow7(state0);
         state0 = state0 + PoseidonGoldilocksConstants::C[(HALF_N_FULL_ROUNDS + 1) * SPONGE_WIDTH + r];
         state0_ = state0 * PoseidonGoldilocksConstants::S[(SPONGE_WIDTH * 2 - 1) * r];
-        st0 = _mm256_and_si256(st0, mask);
+        st0 = simde_mm256_and_si256(st0, mask);
         state0_ = state0_ + Goldilocks::dot_avx(st0, st1, st2, &(PoseidonGoldilocksConstants::S[(SPONGE_WIDTH * 2 - 1) * r]));
-        __m256i scalar1 = _mm256_set1_epi64x(state0.fe);
-        __m256i w0, w1, w2, s0, s1, s2;
+        simde__m256i scalar1 = simde_mm256_set1_epi64x(state0.fe);
+        simde__m256i w0, w1, w2, s0, s1, s2;
         Goldilocks::load_avx(s0, &(PoseidonGoldilocksConstants::S[(SPONGE_WIDTH * 2 - 1) * r + SPONGE_WIDTH - 1]));
         Goldilocks::load_avx(s1, &(PoseidonGoldilocksConstants::S[(SPONGE_WIDTH * 2 - 1) * r + SPONGE_WIDTH - 1 + 4]));
         Goldilocks::load_avx(s2, &(PoseidonGoldilocksConstants::S[(SPONGE_WIDTH * 2 - 1) * r + SPONGE_WIDTH - 1 + 8]));
